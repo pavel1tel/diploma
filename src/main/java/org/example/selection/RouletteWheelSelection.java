@@ -15,7 +15,7 @@
 //=============================================================================
 package org.example.selection;
 
-import org.example.Individual;
+import org.example.ga.Chromosome;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,10 +24,10 @@ import java.util.Random;
 
 public class RouletteWheelSelection implements SelectionStrategy
 {
-    public List<Individual> select(List<Individual> population,
-                              boolean naturalFitnessScores,
-                              int selectionSize,
-                              Random rng)
+    public List<Chromosome> select(List<Chromosome> population,
+                                   boolean naturalFitnessScores,
+                                   int selectionSize,
+                                   Random rng)
     {
         double[] cumulativeFitnesses = new double[population.size()];
         cumulativeFitnesses[0] = getAdjustedFitness(population.get(0).fitness(),
@@ -39,7 +39,7 @@ public class RouletteWheelSelection implements SelectionStrategy
             cumulativeFitnesses[i] = cumulativeFitnesses[i - 1] + fitness;
         }
 
-        List<Individual> selection = new ArrayList<>(selectionSize);
+        List<Chromosome> selection = new ArrayList<>(selectionSize);
         for (int i = 0; i < selectionSize; i++)
         {
             double randomFitness = rng.nextDouble() * cumulativeFitnesses[cumulativeFitnesses.length - 1];

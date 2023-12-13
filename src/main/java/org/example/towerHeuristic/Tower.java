@@ -1,4 +1,4 @@
-package org.example.heuristic;
+package org.example.towerHeuristic;
 
 import java.util.ArrayList;
 import java.util.List;

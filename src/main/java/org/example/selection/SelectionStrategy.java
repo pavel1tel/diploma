@@ -1,6 +1,6 @@
 package org.example.selection;
 
-import org.example.Individual;
+import org.example.ga.Chromosome;
 
 import java.util.List;
 import java.util.Random;
@@ -8,8 +8,8 @@ import java.util.Random;
 
 public interface SelectionStrategy
 {
-    List<Individual> select(List<Individual> population,
-                                 boolean naturalFitnessScores,
-                                 int selectionSize,
-                                 Random rng);
+    List<Chromosome> select(List<Chromosome> population,
+                            boolean naturalFitnessScores,
+                            int selectionSize,
+                            Random rng);
 }

@@ -15,7 +15,7 @@
 //=============================================================================
 package org.example.selection;
 
-import org.example.Individual;
+import org.example.ga.Chromosome;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,17 +32,17 @@ public class TournamentSelection implements SelectionStrategy
     }
 
 
-    public List<Individual> select(List<Individual> population,
-                              boolean naturalFitnessScores,
-                              int selectionSize,
-                              Random rng)
+    public List<Chromosome> select(List<Chromosome> population,
+                                   boolean naturalFitnessScores,
+                                   int selectionSize,
+                                   Random rng)
     {
-        List<Individual> selection = new ArrayList<Individual>(selectionSize);
+        List<Chromosome> selection = new ArrayList<Chromosome>(selectionSize);
         for (int i = 0; i < selectionSize; i++)
         {
             // Pick two candidates at random.
-            Individual candidate1 = population.get(rng.nextInt(population.size()));
-            Individual candidate2 = population.get(rng.nextInt(population.size()));
+            Chromosome candidate1 = population.get(rng.nextInt(population.size()));
+            Chromosome candidate2 = population.get(rng.nextInt(population.size()));
 
             // Use a random value to decide wether to select the fitter individual or the weaker one.
             boolean selectFitter = rng.nextDouble() < selectionProbability;

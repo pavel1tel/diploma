@@ -1,4 +1,4 @@
-package org.example.heuristic;
+package org.example.towerHeuristic;
 
 import java.util.*;
 
@@ -8,10 +8,6 @@ public class GenerateTowers {
 
     public GenerateTowers(List<BoxGroup> boxGroups) {
         this.boxGroups = boxGroups;
-    }
-
-    public static void main(String[] args) {
-
     }
 
     public BoxGroup pickNewBoxGroup(Tower tower) {

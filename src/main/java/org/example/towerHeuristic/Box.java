@@ -1,22 +1,22 @@
-package org.example.heuristic;
+package org.example.towerHeuristic;
 
-public class Container {
-    private double width;
+public class Box {
+    private double depth;
     private double height;
     private double length;
 
-    public Container(double width, double height, double length) {
-        this.width = width;
+    public Box(double width, double height, double length) {
+        this.depth = width;
         this.height = height;
         this.length = length;
     }
 
-    public double getWidth() {
-        return width;
+    public double getDepth() {
+        return depth;
     }
 
-    public void setWidth(double width) {
-        this.width = width;
+    public void setDepth(double depth) {
+        this.depth = depth;
     }
 
     public double getHeight() {

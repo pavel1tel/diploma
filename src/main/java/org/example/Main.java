@@ -1,6 +1,9 @@
 package org.example;
 
-import org.example.heuristic.*;
+import org.example.fillingHeuristic.FillingHeuristic;
+import org.example.fillingHeuristic.TowerPlacement;
+import org.example.ga.Chromosome;
+import org.example.towerHeuristic.*;
 
 import java.util.*;
 
@@ -19,15 +22,15 @@ public class Main {
 //        for (int i = 0; i < containerV / boxV; i++) {
 //            boxes.add(new Box(7, 6, 8));
 //        }
-        for (int i = 0; i < 1000; i++) {
-            boxes.add(new Box(1, 1, 1));
-        }
+//        for (int i = 0; i < 1000; i++) {
+//            boxes.add(new Box(1, 1, 1));
+//        }
         for (int i = 0; i < 1000; i++) {
             boxes.add(new Box(2, 2, 2));
         }
-        for (int i = 0; i < 1000; i++) {
-            boxes.add(new Box(3, 3, 3));
-        }
+//        for (int i = 0; i < 1000; i++) {
+//            boxes.add(new Box(3, 3, 3));
+//        }
 //        for (int i = 0; i < 1000; i++) {
 //            boxes.add(new Box(3, 3, 3));
 //        }
@@ -36,74 +39,42 @@ public class Main {
 //        }
     }
 
-    private static List<Individual> initializePopulation() {
-        List<Individual> population = new ArrayList<>();
+    private static List<Chromosome> initializePopulation(ArrayList<Tower> towers) {
+        List<Chromosome> population = new ArrayList<>();
         for (int i = 0; i < POPULATION_SIZE; i++) {
-            Individual individual = new Individual();
-            individual.generateRandomGenes(boxes.size());
-            population.add(individual);
+            Chromosome chromosome = new Chromosome();
+            chromosome.generateRandomGenes(towers.size());
+            population.add(chromosome);
         }
         return population;
     }
 
-    private static Individual crossover(Individual parent1, Individual parent2) {
-        Individual child = new Individual();
-        int crossoverPoint = new Random().nextInt(boxes.size());
-        child.genes.addAll(parent1.genes.subList(0, crossoverPoint));
-        child.genes.addAll(parent2.genes.subList(crossoverPoint, boxes.size()));
-        return child;
-    }
-
-    private static void mutate(Individual individual) {
-        int mutationPoint = new Random().nextInt(boxes.size());
-        individual.genes.set(mutationPoint, new Random().nextBoolean() ? 1 : 0);
-    }
-
-    private static List<Individual> generateOffspring(List<Individual> parents) {
-        List<Individual> offspring = new ArrayList<>();
-        while (!parents.isEmpty()) {
-            Individual parent1 = getRandomIndividual(parents);
-            Individual parent2 = getRandomIndividual(parents);
-            if (Math.random() < CROSSOVER_RATE) {
-                Individual child = crossover(parent1, parent2);
-                if (Math.random() < MUTATION_RATE) {
-                    mutate(child);
-                }
-                offspring.add(child);
-            }
-        }
-        return offspring;
-    }
-
-    private static Individual getRandomIndividual(List<Individual> parents) {
+    private static Chromosome getRandomIndividual(List<Chromosome> parents) {
         Random random = new Random();
         int randomIndex = random.nextInt(parents.size());
-        Individual individual = parents.get(randomIndex);
+        Chromosome individual = parents.get(randomIndex);
         parents.remove(randomIndex);
         return individual;
     }
 
     public static void main(String[] args) {
-        List<Individual> population = initializePopulation();
         List<BoxGroup> boxGroups = BoxUtil.groupBoxesByTypes(boxes);
         GenerateTowers generateTowers = new GenerateTowers(boxGroups);
         ArrayList<Tower> towers = new ArrayList<>();
         while (!boxGroups.isEmpty()) {
             Tower tower = generateTowers.fillTower(new Tower(container.getWidth(), container.getHeight(), container.getLength()), true);
             towers.add(tower);
-            System.out.println(tower.getWastedSpace());
         }
-        System.out.println(towers.size());
-//        for (int generation = 0; generation < MAX_GENERATIONS; generation++) {
-//            SelectionStrategy selection = new TournamentSelection(0.5);
-//            List<Individual> selected = selection.select(population, true, (int) (population.size() * 0.3), new Random());
-//            List<Individual> offspring = generateOffspring(selected);
-//            population.addAll(offspring);
-//            population.sort((a, b) -> (int) (b.fitness() - a.fitness()));
-//            population = population.subList(0, POPULATION_SIZE);
-//
-//            Individual bestIndividual = Collections.max(population, Comparator.comparingDouble(Individual::fitness));
-//            System.out.println("generation: " + generation +" Best Fitness: " + bestIndividual.fitness());        }
-
+        FillingHeuristic fillingHeuristic = new FillingHeuristic();
+        List<Chromosome> population = initializePopulation(towers);
+        for (Chromosome chromo : population) {
+            List<TowerPlacement> towerPlacements = fillingHeuristic.generateSolution(chromo, towers, container);
+            double chromoTotalVolume = 0.0;
+            for (TowerPlacement towerPlacement : towerPlacements){
+                Tower tower = towers.get(towerPlacement.getTowerNumber());
+                chromoTotalVolume += tower.getTotalVolume(tower);
+            }
+            System.out.println(chromoTotalVolume);
+        }
     }
 }
