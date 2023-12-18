@@ -62,6 +62,9 @@ public class Tower {
     }
 
     public double getTotalVolume(Tower tower) {
+        if (tower.getBoxes().isEmpty()) {
+            return 0;
+        }
         double boxesVolume = tower.getBoxes().get(0).getDepth() * tower.getBoxes().get(0).getHeight()
                 * tower.getBoxes().get(0).getLength() * tower.getBoxes().size();
         if (tower.getTowerOnTop() != null) {

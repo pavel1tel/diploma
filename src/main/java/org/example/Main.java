@@ -1,42 +1,28 @@
 package org.example;
 
-import org.example.fillingHeuristic.FillingHeuristic;
-import org.example.fillingHeuristic.TowerPlacement;
+import org.example.fillingHeuristic.InversionMutation;
+import org.example.fillingHeuristic.OrderCrossover;
 import org.example.ga.Chromosome;
+import org.example.selection.EliteStrategy;
+import org.example.selection.SelectionStrategy;
 import org.example.towerHeuristic.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class Main {
     private static final int POPULATION_SIZE = 100;
     public static List<Box> boxes = new ArrayList<>();
-    public static Container container = new Container(10, 10, 10);
-    private static final double CROSSOVER_RATE = 1.0;
-    private static final double MUTATION_RATE = 0.1;
+    public static Container container = new Container(40, 8, 8);
+    public static ArrayList<Tower> towers = new ArrayList<>();
 
-    private static final int MAX_GENERATIONS = 1000;
 
     static {
-        int boxV = 5 * 5 * 5;
-        int containerV = (int) (container.getHeight() * container.getWidth() * container.getLength());
-//        for (int i = 0; i < containerV / boxV; i++) {
-//            boxes.add(new Box(7, 6, 8));
-//        }
-//        for (int i = 0; i < 1000; i++) {
-//            boxes.add(new Box(1, 1, 1));
-//        }
-        for (int i = 0; i < 1000; i++) {
-            boxes.add(new Box(2, 2, 2));
+        Random random = new Random();
+        for (int i = 0; i < 2000; i++) {
+            boxes.add(new Box(random.nextInt(1, 5), random.nextInt(1, 5), random.nextInt(1, 5)));
         }
-//        for (int i = 0; i < 1000; i++) {
-//            boxes.add(new Box(3, 3, 3));
-//        }
-//        for (int i = 0; i < 1000; i++) {
-//            boxes.add(new Box(3, 3, 3));
-//        }
-//        for (int i = 0; i < 1000; i++) {
-//            boxes.add(new Box(2, 2, 2));
-//        }
     }
 
     private static List<Chromosome> initializePopulation(ArrayList<Tower> towers) {
@@ -58,23 +44,35 @@ public class Main {
     }
 
     public static void main(String[] args) {
+        long startTime = System.nanoTime();
         List<BoxGroup> boxGroups = BoxUtil.groupBoxesByTypes(boxes);
         GenerateTowers generateTowers = new GenerateTowers(boxGroups);
-        ArrayList<Tower> towers = new ArrayList<>();
         while (!boxGroups.isEmpty()) {
             Tower tower = generateTowers.fillTower(new Tower(container.getWidth(), container.getHeight(), container.getLength()), true);
             towers.add(tower);
         }
-        FillingHeuristic fillingHeuristic = new FillingHeuristic();
         List<Chromosome> population = initializePopulation(towers);
-        for (Chromosome chromo : population) {
-            List<TowerPlacement> towerPlacements = fillingHeuristic.generateSolution(chromo, towers, container);
-            double chromoTotalVolume = 0.0;
-            for (TowerPlacement towerPlacement : towerPlacements){
-                Tower tower = towers.get(towerPlacement.getTowerNumber());
-                chromoTotalVolume += tower.getTotalVolume(tower);
+        for (int i = 0; i < 500; i++) {
+            SelectionStrategy selectionStrategy = new EliteStrategy();
+            List<Chromosome> selected = selectionStrategy.select(population, true, 30, new Random());
+            OrderCrossover orderCrossover = new OrderCrossover();
+            InversionMutation inversionMutation = new InversionMutation();
+            for (int j = 0; j < 30; j += 1) {
+                if (new Random().nextBoolean() && j + 1 < selected.size()) {
+                    Chromosome newChromo = orderCrossover.crossover(selected.get(j), selected.get(j + 1));
+                    population.add(newChromo);
+                    j++;
+                } else {
+                    population.add(inversionMutation.mutate(selected.get(j)));
+                }
             }
-            System.out.println(chromoTotalVolume);
+            population.sort((c1, c2) -> (int) (c2.fitness() - c1.fitness()));
+            population = new ArrayList<>(population.subList(0, 100));
         }
+        long endTime = System.nanoTime();
+        double duration = (double) (endTime - startTime) / 1000000000;
+        System.out.println("Millis: " + duration);
+        System.out.println("Volume: " + population.get(0).fitness());
+
     }
 }

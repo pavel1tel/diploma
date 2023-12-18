@@ -10,7 +10,7 @@ import java.util.List;
 
 public class FillingHeuristic {
 
-    public List<TowerPlacement> generateSolution(Chromosome chromosome, List<Tower> towers, Container container){
+    public static  List<TowerPlacement> generateSolution(Chromosome chromosome, List<Tower> towers, Container container){
         List<TowerPlacement> towerPlacements = new ArrayList<>();
         double xcord = 0;
         double ycord = 0;
@@ -37,7 +37,7 @@ public class FillingHeuristic {
 
     //depth - x
     //length - y
-    public TowerBase getTowerBase(Gene gene, Tower tower){
+    public static TowerBase getTowerBase(Gene gene, Tower tower){
         TowerBase towerBase = new TowerBase();
         if (tower.getLength() >= tower.getDepth()){
             if (gene.getRotation() == 0){
