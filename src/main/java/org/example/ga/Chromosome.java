@@ -1,6 +1,8 @@
 package org.example.ga;
 
+import org.example.fillingHeuristic.DummyFillingHeuristic;
 import org.example.fillingHeuristic.FillingHeuristic;
+import org.example.fillingHeuristic.RecursiveFillingHeuristic;
 import org.example.fillingHeuristic.TowerPlacement;
 import org.example.towerHeuristic.Tower;
 
@@ -15,6 +17,8 @@ import static org.example.Main.*;
 
 public class Chromosome {
     List<Gene> genes;
+
+    FillingHeuristic fillingHeuristic = new RecursiveFillingHeuristic();
 
     public Chromosome() {
         genes = new ArrayList<>();
@@ -40,9 +44,9 @@ public class Chromosome {
     }
 
     public double fitness() {
-        List< TowerPlacement > towerPlacements = FillingHeuristic.generateSolution(this, towers, container);
+        List<TowerPlacement> towerPlacements = fillingHeuristic.generateSolution(this, towers, container);
         double chromoTotalVolume = 0.0;
-        for (TowerPlacement towerPlacement : towerPlacements){
+        for (TowerPlacement towerPlacement : towerPlacements) {
             Tower tower = towers.get(towerPlacement.getTowerNumber());
             chromoTotalVolume += tower.getTotalVolume(tower);
         }

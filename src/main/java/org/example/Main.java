@@ -14,14 +14,46 @@ import java.util.Random;
 public class Main {
     private static final int POPULATION_SIZE = 100;
     public static List<Box> boxes = new ArrayList<>();
-    public static Container container = new Container(40, 8, 8);
+    public static Container container = new Container(530, 210, 220);
     public static ArrayList<Tower> towers = new ArrayList<>();
 
 
     static {
-        Random random = new Random();
-        for (int i = 0; i < 2000; i++) {
-            boxes.add(new Box(random.nextInt(1, 5), random.nextInt(1, 5), random.nextInt(1, 5)));
+        for (int i = 0; i < 325; i++) {
+            boxes.add(new Box(36, 40, 28));
+        }
+        for (int i = 0; i < 25; i++) {
+            boxes.add(new Box(28, 54, 30));
+        }
+        for (int i = 0; i < 75; i++) {
+            boxes.add(new Box(28, 54, 30));
+        }
+        for (int i = 0; i < 75; i++) {
+            boxes.add(new Box(29, 39, 32));
+        }
+        for (int i = 0; i < 10; i++) {
+            boxes.add(new Box(10, 15, 20));
+        }
+        for (int i = 0; i < 150; i++) {
+            boxes.add(new Box(37, 42, 25));
+        }
+        for (int i = 0; i < 3; i++) {
+            boxes.add(new Box(18, 36, 18));
+        }
+        for (int i = 0; i < 25; i++) {
+            boxes.add(new Box(17, 18, 22));
+        }
+        for (int i = 0; i < 50; i++) {
+            boxes.add(new Box(17, 22, 22));
+        }
+        for (int i = 0; i < 5; i++) {
+            boxes.add(new Box(11, 12, 16));
+        }
+        for (int i = 0; i < 20; i++) {
+            boxes.add(new Box(27, 30, 40));
+        }
+        for (int i = 0; i < 3; i++) {
+            boxes.add(new Box(7, 19, 21));
         }
     }
 
@@ -35,14 +67,6 @@ public class Main {
         return population;
     }
 
-    private static Chromosome getRandomIndividual(List<Chromosome> parents) {
-        Random random = new Random();
-        int randomIndex = random.nextInt(parents.size());
-        Chromosome individual = parents.get(randomIndex);
-        parents.remove(randomIndex);
-        return individual;
-    }
-
     public static void main(String[] args) {
         long startTime = System.nanoTime();
         List<BoxGroup> boxGroups = BoxUtil.groupBoxesByTypes(boxes);
@@ -54,10 +78,10 @@ public class Main {
         List<Chromosome> population = initializePopulation(towers);
         for (int i = 0; i < 500; i++) {
             SelectionStrategy selectionStrategy = new EliteStrategy();
-            List<Chromosome> selected = selectionStrategy.select(population, true, 30, new Random());
+            List<Chromosome> selected = selectionStrategy.select(population, true, (int) (POPULATION_SIZE * 0.3), new Random());
             OrderCrossover orderCrossover = new OrderCrossover();
             InversionMutation inversionMutation = new InversionMutation();
-            for (int j = 0; j < 30; j += 1) {
+            for (int j = 0; j < POPULATION_SIZE * 0.3; j += 1) {
                 if (new Random().nextBoolean() && j + 1 < selected.size()) {
                     Chromosome newChromo = orderCrossover.crossover(selected.get(j), selected.get(j + 1));
                     population.add(newChromo);
@@ -67,12 +91,14 @@ public class Main {
                 }
             }
             population.sort((c1, c2) -> (int) (c2.fitness() - c1.fitness()));
-            population = new ArrayList<>(population.subList(0, 100));
+            population = new ArrayList<>(population.subList(0, POPULATION_SIZE));
+            System.out.println("Volume ut: " + population.get(0).fitness() / (container.getHeight() * container.getLength() * container.getWidth()));
         }
         long endTime = System.nanoTime();
         double duration = (double) (endTime - startTime) / 1000000000;
-        System.out.println("Millis: " + duration);
+        System.out.println("Seconds: " + duration);
         System.out.println("Volume: " + population.get(0).fitness());
+        System.out.println("Volume ut: " + population.get(0).fitness() / (container.getHeight() * container.getLength() * container.getWidth()));
 
     }
 }

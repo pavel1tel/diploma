@@ -2,10 +2,18 @@ package org.example.towerHeuristic;
 
 public class Box {
     private double depth;
+
+    private int orD = 0;
     private double height;
+
+    private int orH = 1;
     private double length;
 
-    public Box(double width, double height, double length) {
+    private int orL = 0;
+
+    private int orientation;
+
+    public Box( double length, double width, double height) {
         this.depth = width;
         this.height = height;
         this.length = length;
