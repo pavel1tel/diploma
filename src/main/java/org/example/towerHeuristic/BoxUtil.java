@@ -15,7 +15,7 @@ public class BoxUtil {
         rotations.add("xz");
     }
 
-    public static AbstractMap.SimpleEntry<String, Double> getBoxGroupLongestDimension(BoxGroup boxGroup) {
+    public static AbstractMap.SimpleEntry<String, Integer> getBoxGroupLongestDimension(BoxGroup boxGroup) {
         if (boxGroup.getHeight() > boxGroup.getDepth() && boxGroup.getHeight() > boxGroup.getLength()) {
             return new AbstractMap.SimpleEntry<>("height", boxGroup.getHeight());
         }
@@ -26,22 +26,27 @@ public class BoxUtil {
         }
     }
 
-    public static void rotateBoxSoLargestDimensionGoDeep(BoxGroup boxGroup, Tower tower){
-        ArrayList<AbstractMap.SimpleEntry<String, Double>> dimensions = new ArrayList<>();
+    public static void rotateBoxSoLargestDimensionGoDeep(BoxGroup boxGroup, Tower tower) {
+        ArrayList<String> allowedRotations = getAllowedRotations(boxGroup);
+        ArrayList<AbstractMap.SimpleEntry<String, Integer>> dimensions = new ArrayList<>();
         dimensions.add(new AbstractMap.SimpleEntry<>("height", boxGroup.getHeight()));
         dimensions.add(new AbstractMap.SimpleEntry<>("depth", boxGroup.getDepth()));
         dimensions.add(new AbstractMap.SimpleEntry<>("length", boxGroup.getLength()));
         dimensions.sort(Comparator.comparingDouble(AbstractMap.SimpleEntry::getValue));
         Collections.reverse(dimensions);
-        for (AbstractMap.SimpleEntry<String, Double> dimension : dimensions) {
-            if (dimension.getValue() > tower.getDepth()){
+        for (AbstractMap.SimpleEntry<String, Integer> dimension : dimensions) {
+            if (dimension.getValue() > tower.getDepth()) {
                 continue;
             }
             if (dimension.getKey().equals("height")) {
-                BoxUtil.rotateBox(boxGroup, "x");
+                if (allowedRotations.contains("x")) {
+                    BoxUtil.rotateBox(boxGroup, "x");
+                }
             }
             if (dimension.getKey().equals("length")) {
-                BoxUtil.rotateBox(boxGroup, "z");
+                if (allowedRotations.add("z")) {
+                    BoxUtil.rotateBox(boxGroup, "z");
+                }
             }
             return;
         }
@@ -49,7 +54,7 @@ public class BoxUtil {
     }
 
     public static void rotateBox(BoxGroup boxGroup, String rotationType) {
-        Box box = new Box(boxGroup.getDepth(), boxGroup.getHeight(), boxGroup.getLength());
+        Box box = new Box(boxGroup.getLength(), boxGroup.getDepth(), boxGroup.getHeight());
         // length - x
         // depth  - y
         // height - z
@@ -86,7 +91,7 @@ public class BoxUtil {
 
     public static ArrayList<String> getBoxRotationThatFitsTower(BoxGroup boxGroup, Tower tower) {
         ArrayList<String> possibleRotations = new ArrayList<>();
-        for (String rotation : rotations) {
+        for (String rotation : getAllowedRotations(boxGroup)) {
             BoxGroup copy = new BoxGroup(boxGroup);
             rotateBox(boxGroup, rotation);
             if (checkFit(boxGroup, tower)) {
@@ -97,6 +102,27 @@ public class BoxUtil {
             boxGroup.setLength(copy.getLength());
         }
         return possibleRotations;
+    }
+
+    public static ArrayList<String> getAllowedRotations(BoxGroup boxGroup) {
+        ArrayList<String> rotations = new ArrayList<>();
+        if (boxGroup.getRotations() == 2) {
+            rotations.add("xx");
+            rotations.add("z");
+        } else if (boxGroup.getRotations() == 4) {
+            rotations.add("xx");
+            rotations.add("z");
+            rotations.add("y");
+            rotations.add("xy");
+        } else if (boxGroup.getRotations() == 6) {
+            rotations.add("xx");
+            rotations.add("z");
+            rotations.add("y");
+            rotations.add("xy");
+            rotations.add("z");
+            rotations.add("xz");
+        }
+        return rotations;
     }
 
     public static boolean checkFit(BoxGroup boxGroup, Tower tower) {
@@ -112,10 +138,47 @@ public class BoxUtil {
             if (groupMap.containsKey(key)) {
                 groupMap.get(key).incrementQuantity();
             } else {
-                BoxGroup boxGroup = new BoxGroup(box.getDepth(), box.getHeight(), box.getLength());
+                BoxGroup boxGroup = new BoxGroup(box.getDepth(), box.getHeight(), box.getLength(), box.getRotations());
                 groupMap.put(key, boxGroup);
             }
         }
         return new ArrayList<>(groupMap.values().stream().toList());
     }
+
+    public static boolean areBoxesEqual(BoxGroup boxGroup1, BoxGroup boxGroup2){
+        for (String rotation : rotations) {
+            BoxGroup copy = new BoxGroup(boxGroup2);
+            rotateBox(boxGroup2, rotation);
+            if (boxGroup1.getHeight() == boxGroup2.getHeight() &&
+                boxGroup1.getDepth() == boxGroup2.getDepth() &&
+                boxGroup1.getLength() == boxGroup2.getLength()) {
+               return true;
+            }
+            boxGroup2.setDepth(copy.getDepth());
+            boxGroup2.setHeight(copy.getHeight());
+            boxGroup2.setLength(copy.getLength());
+        }
+        return false;
+    }
+
+
+    public static BoxGroup getEqualBox(BoxGroup boxGroup1, List<BoxGroup> boxGroups){
+        for(BoxGroup boxGroup2 : boxGroups) {
+            for (String rotation : rotations) {
+                BoxGroup copy = new BoxGroup(boxGroup2);
+                rotateBox(boxGroup2, rotation);
+                if (boxGroup1.getHeight() == boxGroup2.getHeight() &&
+                        boxGroup1.getDepth() == boxGroup2.getDepth() &&
+                        boxGroup1.getLength() == boxGroup2.getLength()) {
+                    return boxGroup2;
+                }
+                boxGroup2.setDepth(copy.getDepth());
+                boxGroup2.setHeight(copy.getHeight());
+                boxGroup2.setLength(copy.getLength());
+            }
+        }
+        return null;
+    }
+
+
 }

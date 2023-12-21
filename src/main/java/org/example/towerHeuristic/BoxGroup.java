@@ -1,49 +1,57 @@
 package org.example.towerHeuristic;
 
+import java.util.List;
 import java.util.Objects;
 
+import static org.example.towerHeuristic.BoxUtil.areBoxesEqual;
+
 public class BoxGroup {
-    private double depth;
-    private double height;
-    private double length;
+    private int depth;
+    private int height;
+    private int length;
+
+    private int rotations;
 
     private boolean isOpen = false;
 
     private int remainingQuantity = 1;
 
     public BoxGroup(BoxGroup boxGroup) {
+        this.rotations = boxGroup.rotations;
         this.depth = boxGroup.getDepth();
         this.height = boxGroup.getHeight();
         this.length = boxGroup.getLength();
+        this.remainingQuantity = boxGroup.getRemainingQuantity();
     }
 
-    public BoxGroup(double depth, double height, double length) {
+    public BoxGroup(int depth, int height, int length, int rotations) {
+        this.rotations = rotations;
         this.depth = depth;
         this.height = height;
         this.length = length;
     }
 
-    public double getDepth() {
+    public int getDepth() {
         return depth;
     }
 
-    public void setDepth(double depth) {
+    public void setDepth(int depth) {
         this.depth = depth;
     }
 
-    public double getHeight() {
+    public int getHeight() {
         return height;
     }
 
-    public void setHeight(double height) {
+    public void setHeight(int height) {
         this.height = height;
     }
 
-    public double getLength() {
+    public int getLength() {
         return length;
     }
 
-    public void setLength(double length) {
+    public void setLength(int length) {
         this.length = length;
     }
 
@@ -67,7 +75,9 @@ public class BoxGroup {
         remainingQuantity += 1;
     }
 
-    public void decrementQuantity() {
+    public void decrementQuantity(List<BoxGroup> boxGroupList) {
+        BoxGroup original = BoxUtil.getEqualBox(this, boxGroupList);
+        original.setRemainingQuantity(original.getRemainingQuantity() - 1);
         remainingQuantity -= 1;
     }
 
@@ -76,12 +86,12 @@ public class BoxGroup {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BoxGroup boxGroup = (BoxGroup) o;
-        return Double.compare(depth, boxGroup.depth) == 0 && Double.compare(height, boxGroup.height) == 0 && Double.compare(length, boxGroup.length) == 0 && isOpen == boxGroup.isOpen && remainingQuantity == boxGroup.remainingQuantity;
+        return areBoxesEqual(this, boxGroup);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(depth, height, length, isOpen, remainingQuantity);
+        return Objects.hash(depth, height, length);
     }
 
     @Override
@@ -95,5 +105,12 @@ public class BoxGroup {
                 '}';
     }
 
+    public int getRotations() {
+        return rotations;
+    }
+
+    public void setRotations(int rotations) {
+        this.rotations = rotations;
+    }
 
 }

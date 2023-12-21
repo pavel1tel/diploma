@@ -4,6 +4,7 @@ import org.example.fillingHeuristic.InversionMutation;
 import org.example.fillingHeuristic.OrderCrossover;
 import org.example.ga.Chromosome;
 import org.example.selection.EliteStrategy;
+import org.example.selection.RouletteWheelSelection;
 import org.example.selection.SelectionStrategy;
 import org.example.towerHeuristic.*;
 
@@ -55,6 +56,15 @@ public class Main {
         for (int i = 0; i < 3; i++) {
             boxes.add(new Box(7, 19, 21));
         }
+//        for (int i = 0; i < 1000; i++) {
+//            boxes.add(new Box(2, 2, 2));
+//        }
+//        for (int i = 0; i < 1000; i++) {
+//            boxes.add(new Box(3, 3, 3));
+//        }
+//        for (int i = 0; i < 1000; i++) {
+//            boxes.add(new Box(1, 1, 1));
+//        }
     }
 
     private static List<Chromosome> initializePopulation(ArrayList<Tower> towers) {
@@ -74,19 +84,25 @@ public class Main {
         while (!boxGroups.isEmpty()) {
             Tower tower = generateTowers.fillTower(new Tower(container.getWidth(), container.getHeight(), container.getLength()), true);
             towers.add(tower);
+//            for (BoxGroup boxGroup: boxGroups) {
+//                System.out.println(boxGroup);
+//            }
+//            System.out.println();
         }
         List<Chromosome> population = initializePopulation(towers);
-        for (int i = 0; i < 500; i++) {
-            SelectionStrategy selectionStrategy = new EliteStrategy();
+
+        for (int i = 0; i < 1500; i++) {
+            SelectionStrategy selectionStrategy = new RouletteWheelSelection();
             List<Chromosome> selected = selectionStrategy.select(population, true, (int) (POPULATION_SIZE * 0.3), new Random());
             OrderCrossover orderCrossover = new OrderCrossover();
             InversionMutation inversionMutation = new InversionMutation();
             for (int j = 0; j < POPULATION_SIZE * 0.3; j += 1) {
-                if (new Random().nextBoolean() && j + 1 < selected.size()) {
+                double chance = new Random().nextDouble();
+                if (chance <= 0.9 && j + 1 < selected.size()) {
                     Chromosome newChromo = orderCrossover.crossover(selected.get(j), selected.get(j + 1));
                     population.add(newChromo);
                     j++;
-                } else {
+                } else if (chance <= 0.3) {
                     population.add(inversionMutation.mutate(selected.get(j)));
                 }
             }
