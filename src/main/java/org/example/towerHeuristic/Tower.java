@@ -55,12 +55,6 @@ public class Tower {
         this.length = length;
     }
 
-    public double getWastedSpace() {
-        double maximumVolume = this.getDepth() * container.getHeight() * this.getLength();
-        double towerTotalVolume = getTotalVolume(this);
-        return maximumVolume - towerTotalVolume;
-    }
-
     public double getTotalVolume(Tower tower) {
         if (tower.getBoxes().isEmpty()) {
             return 0;
@@ -79,6 +73,22 @@ public class Tower {
         return boxesVolume;
     }
 
+    public double getTotalWeight(Tower tower) {
+        if (tower.getBoxes().isEmpty()) {
+            return 0;
+        }
+        double totalWeight = tower.getBoxes().get(0).getWeight() * tower.getBoxes().size();
+        if (tower.getTowerOnTop() != null) {
+            totalWeight += getTotalWeight(tower.getTowerOnTop());
+        }
+        if (tower.getOnFront() != null) {
+            totalWeight += getTotalWeight(tower.getOnFront());
+        }
+        if (tower.getOnSide() != null) {
+            totalWeight += getTotalWeight(tower.getOnSide());
+        }
+        return totalWeight;
+    }
     public double getDepth() {
         return depth;
     }

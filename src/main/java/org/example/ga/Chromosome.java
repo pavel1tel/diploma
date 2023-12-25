@@ -16,6 +16,9 @@ import java.util.stream.IntStream;
 import static org.example.Main.*;
 
 public class Chromosome {
+    public int dominationCount = 0;
+    public ArrayList<Integer> dominatedSolutions = new ArrayList<>();
+    public int rank;
     List<Gene> genes;
 
     FillingHeuristic fillingHeuristic = new RecursiveFillingHeuristic();
@@ -51,6 +54,23 @@ public class Chromosome {
             chromoTotalVolume += tower.getTotalVolume(tower);
         }
         return chromoTotalVolume;
+    }
+
+    public double weightFitness() {
+        List<TowerPlacement> towerPlacements = fillingHeuristic.generateSolution(this, towers, container);
+        double chromoTotalWeight = 0.0;
+        for (TowerPlacement towerPlacement : towerPlacements) {
+            Tower tower = towers.get(towerPlacement.getTowerNumber());
+            chromoTotalWeight += tower.getTotalWeight(tower);
+        }
+        return chromoTotalWeight >= 7200 ? 0 : chromoTotalWeight;
+    }
+
+    public boolean dominates(Chromosome p){
+        if(this.fitness() > p.fitness() && this.weightFitness() > p.weightFitness()){
+            return true;
+        }
+        return false;
     }
 
     public List<Gene> getGenes() {

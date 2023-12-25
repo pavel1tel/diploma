@@ -54,7 +54,7 @@ public class BoxUtil {
     }
 
     public static void rotateBox(BoxGroup boxGroup, String rotationType) {
-        Box box = new Box(boxGroup.getLength(), boxGroup.getDepth(), boxGroup.getHeight());
+        Box box = new Box(boxGroup.getLength(), boxGroup.getDepth(), boxGroup.getHeight(), 0);
         // length - x
         // depth  - y
         // height - z
@@ -86,7 +86,7 @@ public class BoxUtil {
         }
         boxGroup.setLength(box.getLength());
         boxGroup.setHeight(box.getHeight());
-        boxGroup.setDepth(boxGroup.getDepth());
+        boxGroup.setDepth(box.getDepth());
     }
 
     public static ArrayList<String> getBoxRotationThatFitsTower(BoxGroup boxGroup, Tower tower) {
@@ -138,7 +138,7 @@ public class BoxUtil {
             if (groupMap.containsKey(key)) {
                 groupMap.get(key).incrementQuantity();
             } else {
-                BoxGroup boxGroup = new BoxGroup(box.getDepth(), box.getHeight(), box.getLength(), box.getRotations());
+                BoxGroup boxGroup = new BoxGroup(box.getDepth(), box.getHeight(), box.getLength(), box.getWeight(), box.getRotations());
                 groupMap.put(key, boxGroup);
             }
         }

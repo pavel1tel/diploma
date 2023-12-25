@@ -10,6 +10,8 @@ public class BoxGroup {
     private int height;
     private int length;
 
+    private double weight;
+
     private int rotations;
 
     private boolean isOpen = false;
@@ -17,6 +19,7 @@ public class BoxGroup {
     private int remainingQuantity = 1;
 
     public BoxGroup(BoxGroup boxGroup) {
+        this.weight = boxGroup.weight;
         this.rotations = boxGroup.rotations;
         this.depth = boxGroup.getDepth();
         this.height = boxGroup.getHeight();
@@ -24,7 +27,8 @@ public class BoxGroup {
         this.remainingQuantity = boxGroup.getRemainingQuantity();
     }
 
-    public BoxGroup(int depth, int height, int length, int rotations) {
+    public BoxGroup(int depth, int height, int length, double weight, int rotations) {
+        this.weight = weight;
         this.rotations = rotations;
         this.depth = depth;
         this.height = height;
@@ -113,4 +117,11 @@ public class BoxGroup {
         this.rotations = rotations;
     }
 
+    public double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(double weight) {
+        this.weight = weight;
+    }
 }

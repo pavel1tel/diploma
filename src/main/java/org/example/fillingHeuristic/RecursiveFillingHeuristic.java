@@ -10,7 +10,10 @@ import java.util.*;
 import static org.example.fillingHeuristic.DummyFillingHeuristic.getTowerBase;
 
 public class RecursiveFillingHeuristic implements FillingHeuristic {
+
+    public static double totalWeight = 0.0;
     public List<TowerPlacement> generateSolution(Chromosome chromosome, List<Tower> towers, Container container) {
+        totalWeight = 0.0;
         EmptySpace emptySpace = new EmptySpace(0, 0, container.getLength(), container.getWidth());
         ArrayList<TowerPlacement> towerPlacements = new ArrayList<>();
         HashSet<Integer> usedTowers = new HashSet<>();
@@ -23,9 +26,13 @@ public class RecursiveFillingHeuristic implements FillingHeuristic {
         if (towerBase == null) {
             return;
         }
+        if (totalWeight + towerBase.getValue().getWeight() > 7200){
+            return;
+        }
         TowerPlacement towerPlacement = new TowerPlacement(towerBase.getKey().getTowersIndex(), towerBase.getKey().getRotation(), emptySpace.getXcord(), emptySpace.getYcord());
         towerPlacements.add(towerPlacement);
-        EmptySpace onSide = new EmptySpace(emptySpace.getXcord(), emptySpace.getYcord() + emptySpace.getLength(), emptySpace.getLength() - towerBase.getValue().getLength(), towerBase.getValue().getDepth());
+        totalWeight += towerBase.getValue().getWeight();
+        EmptySpace onSide = new EmptySpace(emptySpace.getXcord(), emptySpace.getYcord() + towerBase.getValue().getLength(), emptySpace.getLength() - towerBase.getValue().getLength(), towerBase.getValue().getDepth());
         fillRecursively(onSide, towerPlacements, chromosome, usedTowers, towers);
         EmptySpace inFront = new EmptySpace(emptySpace.getXcord() + towerBase.getValue().getDepth(), emptySpace.getYcord(), emptySpace.getLength(), emptySpace.getDepth() - towerBase.getValue().getDepth());
         fillRecursively(inFront, towerPlacements, chromosome, usedTowers, towers);

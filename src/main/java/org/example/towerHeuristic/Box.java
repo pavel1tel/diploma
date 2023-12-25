@@ -11,12 +11,12 @@ public class Box {
 
     private int orL = 0;
 
-    private int orientation;
-
-    public Box(int length, int width, int height) {
+    private double weight;
+    public Box(int length, int width, int height, double weight) {
         this.depth = width;
         this.height = height;
         this.length = length;
+        this.weight = 1;
     }
 
     public int getDepth() {
@@ -45,5 +45,13 @@ public class Box {
 
     public int getRotations() {
         return 2 * this.orD + 2 * this.orH + 2 * this.orL;
+    }
+
+    public double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(double weight) {
+        this.weight = weight;
     }
 }

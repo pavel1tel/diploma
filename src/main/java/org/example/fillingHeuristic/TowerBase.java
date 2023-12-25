@@ -4,6 +4,8 @@ public class TowerBase {
     double length;
     double depth;
 
+    double weight;
+
     public double getLength() {
         return length;
     }
@@ -18,5 +20,13 @@ public class TowerBase {
 
     public void setDepth(double depth) {
         this.depth = depth;
+    }
+
+    public double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(double weight) {
+        this.weight = weight;
     }
 }
