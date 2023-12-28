@@ -12,30 +12,39 @@ import static org.example.fillingHeuristic.DummyFillingHeuristic.getTowerBase;
 public class RecursiveFillingHeuristic implements FillingHeuristic {
 
     public static double totalWeight = 0.0;
+
     public List<TowerPlacement> generateSolution(Chromosome chromosome, List<Tower> towers, Container container) {
         totalWeight = 0.0;
         EmptySpace emptySpace = new EmptySpace(0, 0, container.getLength(), container.getWidth());
         ArrayList<TowerPlacement> towerPlacements = new ArrayList<>();
         HashSet<Integer> usedTowers = new HashSet<>();
-        fillRecursively(emptySpace, towerPlacements, chromosome, usedTowers, towers);
+        fillRecursively(emptySpace, towerPlacements, chromosome, usedTowers, towers, true);
         return towerPlacements;
     }
 
-    public static void fillRecursively(EmptySpace emptySpace, List<TowerPlacement> towerPlacements, Chromosome chromosome, HashSet<Integer> usedTowers, List<Tower> towers) {
+    public static void fillRecursively(EmptySpace emptySpace, List<TowerPlacement> towerPlacements, Chromosome chromosome, HashSet<Integer> usedTowers, List<Tower> towers, boolean flag) {
         AbstractMap.SimpleEntry<Gene, TowerBase> towerBase = pickTowerBaseFromChromo(chromosome, usedTowers, towers, emptySpace);
         if (towerBase == null) {
             return;
         }
-        if (totalWeight + towerBase.getValue().getWeight() > 7200){
+        if (totalWeight + towerBase.getValue().getWeight() > 7200) {
             return;
         }
         TowerPlacement towerPlacement = new TowerPlacement(towerBase.getKey().getTowersIndex(), towerBase.getKey().getRotation(), emptySpace.getXcord(), emptySpace.getYcord());
         towerPlacements.add(towerPlacement);
         totalWeight += towerBase.getValue().getWeight();
-        EmptySpace onSide = new EmptySpace(emptySpace.getXcord(), emptySpace.getYcord() + towerBase.getValue().getLength(), emptySpace.getLength() - towerBase.getValue().getLength(), towerBase.getValue().getDepth());
-        fillRecursively(onSide, towerPlacements, chromosome, usedTowers, towers);
-        EmptySpace inFront = new EmptySpace(emptySpace.getXcord() + towerBase.getValue().getDepth(), emptySpace.getYcord(), emptySpace.getLength(), emptySpace.getDepth() - towerBase.getValue().getDepth());
-        fillRecursively(inFront, towerPlacements, chromosome, usedTowers, towers);
+        if (flag) {
+            EmptySpace onSide = new EmptySpace(emptySpace.getXcord(), emptySpace.getYcord() + towerBase.getValue().getLength(), emptySpace.getLength() - towerBase.getValue().getLength(), towerBase.getValue().getDepth());
+            fillRecursively(onSide, towerPlacements, chromosome, usedTowers, towers, false);
+            EmptySpace inFront = new EmptySpace(emptySpace.getXcord() + towerBase.getValue().getDepth(), emptySpace.getYcord(), emptySpace.getLength(), emptySpace.getDepth() - towerBase.getValue().getDepth());
+            fillRecursively(inFront, towerPlacements, chromosome, usedTowers, towers, false);
+        } else {
+            EmptySpace inFront = new EmptySpace(emptySpace.getXcord() + towerBase.getValue().getDepth(), emptySpace.getYcord(), emptySpace.getLength(), emptySpace.getDepth() - towerBase.getValue().getDepth());
+            fillRecursively(inFront, towerPlacements, chromosome, usedTowers, towers, true);
+            EmptySpace onSide = new EmptySpace(emptySpace.getXcord(), emptySpace.getYcord() + towerBase.getValue().getLength(), emptySpace.getLength() - towerBase.getValue().getLength(), towerBase.getValue().getDepth());
+            fillRecursively(onSide, towerPlacements, chromosome, usedTowers, towers, true);
+        }
+
     }
 
     private static AbstractMap.SimpleEntry<Gene, TowerBase> pickTowerBaseFromChromo(Chromosome chromosome, HashSet<Integer> usedTowers, List<Tower> towers, EmptySpace emptySpace) {

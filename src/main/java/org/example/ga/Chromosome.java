@@ -21,7 +21,7 @@ public class Chromosome {
     public int rank;
     List<Gene> genes;
 
-    FillingHeuristic fillingHeuristic = new RecursiveFillingHeuristic();
+    FillingHeuristic fillingHeuristic = new DummyFillingHeuristic();
 
     public Chromosome() {
         genes = new ArrayList<>();

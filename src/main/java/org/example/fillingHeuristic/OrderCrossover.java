@@ -10,7 +10,7 @@ import java.util.Random;
 
 public class OrderCrossover {
 
-    public Chromosome crossover(Chromosome p1, Chromosome p2) {
+    public ArrayList<Chromosome> crossover(Chromosome p1, Chromosome p2) {
         Random rnd = new Random();
         int maxWindowSize = p1.getGenes().size() / 2;
         int windowSize = rnd.nextInt(1, maxWindowSize);
@@ -34,6 +34,9 @@ public class OrderCrossover {
         }
         Collections.rotate(child1, start);
         Collections.rotate(child2, start);
-        return new Chromosome(child1);
+        ArrayList<Chromosome> result = new ArrayList<>();
+        result.add(new Chromosome(child1));
+        result.add(new Chromosome(child2));
+        return result;
     }
 }

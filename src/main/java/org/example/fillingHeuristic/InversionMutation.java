@@ -17,7 +17,10 @@ public class InversionMutation {
         int end = start + windowSize;
         genes.addAll(chromosome.getGenes().subList(0, start));
         for (int i = end; i >= start; i--) {
-            genes.add(chromosome.getGenes().get(i));
+            Gene gene = new Gene();
+            gene.setRotation(chromosome.getGenes().get(i).getRotation() ^ 1);
+            gene.setTowersIndex(chromosome.getGenes().get(i).getTowersIndex());
+            genes.add(gene);
         }
         genes.addAll(chromosome.getGenes().subList(end + 1, chromosome.getGenes().size()));
         return new Chromosome(genes);

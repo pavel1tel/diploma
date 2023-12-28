@@ -1,17 +1,15 @@
 package org.example;
 
-import org.example.fillingHeuristic.InversionMutation;
-import org.example.fillingHeuristic.OrderCrossover;
 import org.example.ga.Chromosome;
-import org.example.ga.NonDominatedSort;
-import org.example.selection.SelectionStrategy;
-import org.example.selection.TournamentSelection;
 import org.example.towerHeuristic.*;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
+import static org.example.Util.calculateMean;
+import static org.example.Util.calculateVariance;
+import static org.example.ga.Crowding.crowdingStep;
 import static org.example.ga.GenerateCoordinates.writeCoordinates;
 
 public class Main {
@@ -79,44 +77,45 @@ public class Main {
         return population;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
+        ArrayList<Double> results = new ArrayList<>();
+        for (int i = 0; i < 1; i++) {
+            results.add(crowding());
+            System.out.println(i);
+        }
+        System.out.println();
+        System.out.println(calculateMean(results));
+        System.out.println(calculateVariance(results));
+
+    }
+
+    public static double crowding() {
         long startTime = System.nanoTime();
         List<BoxGroup> boxGroups = BoxUtil.groupBoxesByTypes(boxes);
         GenerateTowers generateTowers = new GenerateTowers(boxGroups);
+        double result = 0;
         while (!boxGroups.isEmpty()) {
             Tower tower = generateTowers.fillTower(new Tower(container.getWidth(), container.getHeight(), container.getLength()), true);
             towers.add(tower);
         }
         List<Chromosome> population = initializePopulation(towers);
 
-        for (int i = 0; i < 500; i++) {
-//            NonDominatedSort.performNonDominatedSorting(population);
-            SelectionStrategy selectionStrategy = new TournamentSelection(0.7, 2);
-            List<Chromosome> selected = selectionStrategy.select(population, true, (int) (POPULATION_SIZE * 0.3), new Random());
-            OrderCrossover orderCrossover = new OrderCrossover();
-            InversionMutation inversionMutation = new InversionMutation();
-            for (int j = 0; j < POPULATION_SIZE * 0.3; j += 1) {
-                double chance = new Random().nextDouble();
-                if (chance <= 0.9 && j + 1 < selected.size()) {
-                    Chromosome newChromo = orderCrossover.crossover(selected.get(j), selected.get(j + 1));
-                    population.add(newChromo);
-                    j++;
-                } else if (chance <= 0.3) {
-                    population.add(inversionMutation.mutate(selected.get(j)));
-                }
-            }
-            population.sort((c1, c2) -> (int) (c2.fitness() - c1.fitness()));
-            population = new ArrayList<>(population.subList(0, POPULATION_SIZE));
+        for (int i = 0; i < 3000; i++) {
+            population = crowdingStep(population, 4, 0.3, 0.9);
             System.out.println("Volume ut: " + population.get(0).fitness() / (container.getHeight() * container.getLength() * container.getWidth()));
             System.out.println("Weight: " + population.get(0).weightFitness());
-
+            if (result < population.get(0).fitness() / (container.getHeight() * container.getLength() * container.getWidth())) {
+                result = population.get(0).fitness() / (container.getHeight() * container.getLength() * container.getWidth());
+            }
         }
         long endTime = System.nanoTime();
         double duration = (double) (endTime - startTime) / 1000000000;
         System.out.println("Seconds: " + duration);
         System.out.println("Volume: " + population.get(0).fitness());
         System.out.println("Weight: " + population.get(0).weightFitness());
-        System.out.println("Volume ut: " + population.get(0).fitness() / (container.getHeight() * container.getLength() * container.getWidth()));
+        System.out.println("Volume ut: " + result);
         writeCoordinates(population);
+        towers.clear();
+        return result;
     }
 }
