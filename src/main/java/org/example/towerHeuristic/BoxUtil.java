@@ -54,7 +54,7 @@ public class BoxUtil {
     }
 
     public static void rotateBox(BoxGroup boxGroup, String rotationType) {
-        Box box = new Box(boxGroup.getLength(), boxGroup.getDepth(), boxGroup.getHeight(), 0);
+        Box box = new Box(boxGroup.getLength(), 0, boxGroup.getDepth(), 0, boxGroup.getHeight(), 0, 0);
         // length - x
         // depth  - y
         // height - z

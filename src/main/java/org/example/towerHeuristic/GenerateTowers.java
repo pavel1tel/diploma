@@ -92,7 +92,7 @@ public class GenerateTowers {
         double towerHeight = tower.getHeight();
         while (towerHeight - group.getHeight() >= 0 && group.getRemainingQuantity() != 0) {
             towerHeight = towerHeight - group.getHeight();
-            tower.getBoxes().add(new Box(group.getLength(), group.getDepth(), group.getHeight(), group.getWeight()));
+            tower.getBoxes().add(new Box(group.getLength(), 0, group.getDepth(), 0, group.getHeight(), 0, group.getWeight()));
             group.setOpen(true);
             group.decrementQuantity(boxGroups);
         }
