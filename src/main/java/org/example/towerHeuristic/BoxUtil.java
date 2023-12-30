@@ -161,22 +161,6 @@ public class BoxUtil {
         return false;
     }
 
-    public static boolean areBoxEqualBoxGroup(Box boxGroup1, BoxGroup boxGroup2){
-        for (String rotation : rotations) {
-            BoxGroup copy = new BoxGroup(boxGroup2);
-            rotateBox(boxGroup2, rotation);
-            if (boxGroup1.getHeight() == boxGroup2.getHeight() &&
-                    boxGroup1.getDepth() == boxGroup2.getDepth() &&
-                    boxGroup1.getLength() == boxGroup2.getLength()) {
-                return true;
-            }
-            boxGroup2.setDepth(copy.getDepth());
-            boxGroup2.setHeight(copy.getHeight());
-            boxGroup2.setLength(copy.getLength());
-        }
-        return false;
-    }
-
 
     public static BoxGroup getEqualBox(BoxGroup boxGroup1, List<BoxGroup> boxGroups){
         for(BoxGroup boxGroup2 : boxGroups) {

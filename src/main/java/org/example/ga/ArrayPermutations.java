@@ -28,28 +28,4 @@ public class ArrayPermutations {
         chromosomes.set(i, chromosomes.get(j));
         chromosomes.set(j, temp);
     }
-
-    public static void generatePermutations2(List<Chromosome2> chromosomes, int index, List<List<Chromosome2>> result) {
-        if (index == chromosomes.size() - 1) {
-            result.add(chromosomes);
-            return;
-        }
-
-        for (int i = index; i < chromosomes.size(); i++) {
-            // Swap elements at index and i
-            swap2(chromosomes, index, i);
-
-            // Recursively generate permutations for the remaining elements
-            generatePermutations2(chromosomes, index + 1, result);
-
-            // Backtrack by swapping back to the original order
-            swap2(chromosomes, index, i);
-        }
-    }
-
-    private static void swap2(List<Chromosome2> chromosomes, int i, int j) {
-        Chromosome2 temp = chromosomes.get(i);
-        chromosomes.set(i, chromosomes.get(j));
-        chromosomes.set(j, temp);
-    }
 }

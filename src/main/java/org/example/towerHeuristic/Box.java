@@ -3,13 +3,13 @@ package org.example.towerHeuristic;
 public class Box {
     private int depth;
 
-    private int orD;
+    private int orD = 1;
     private int height;
 
-    private int orH;
+    private int orH = 1;
     private int length;
 
-    private int orL;
+    private int orL = 1;
 
     private double weight;
 
