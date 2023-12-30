@@ -150,6 +150,6 @@ public class GenerateTowers {
                 }
             }
         }
-        return result;
+        return null;
     }
 }

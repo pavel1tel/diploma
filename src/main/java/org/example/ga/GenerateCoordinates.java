@@ -16,10 +16,10 @@ import static org.example.fillingHeuristic.DummyFillingHeuristic.getTowerBase;
 
 public class GenerateCoordinates {
 
-    public static void writeCoordinates(List<Chromosome> chromosomes) {
+    public static void writeCoordinates(Chromosome chromosome) {
         clear("result.txt");
-        FillingHeuristic fillingHeuristic = chromosomes.get(0).fillingHeuristic;
-        List<TowerPlacement> towerPlacements = fillingHeuristic.generateSolution(chromosomes.get(0), towers, container);
+        FillingHeuristic fillingHeuristic = chromosome.fillingHeuristic;
+        List<TowerPlacement> towerPlacements = fillingHeuristic.generateSolution(chromosome, towers, container);
         for (TowerPlacement towerPlacement : towerPlacements) {
             Tower tower = towers.get(towerPlacement.getTowerNumber());
             TowerBase towerbase = getTowerBase(towerPlacement.getRotation(), tower);

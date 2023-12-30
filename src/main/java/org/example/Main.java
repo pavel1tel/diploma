@@ -1,5 +1,7 @@
 package org.example;
 
+import org.example.fillingHeuristic.DummyFillingHeuristic;
+import org.example.fillingHeuristic.RecursiveFillingHeuristic;
 import org.example.ga.Chromosome;
 import org.example.towerHeuristic.*;
 
@@ -23,30 +25,6 @@ public class Main {
 
 
     static {
-//        for (int i = 0; i < 13; i++) {
-//            boxes.add(new Box(91,0,  54, 1, 45, 1, 20));
-//        }
-//        for (int i = 0; i < 15; i++) {
-//            boxes.add(new Box(105,1,  77, 1, 72, 1, 20));
-//        }
-//        for (int i = 0; i < 10; i++) {
-//            boxes.add(new Box(79,1,  78, 1, 48, 1, 20));
-//        }
-//        for (int i = 0; i < 12; i++) {
-//            boxes.add(new Box(109,1,  76, 1, 56, 1, 20));
-//        }
-//        for (int i = 0; i < 13; i++) {
-//            boxes.add(new Box(48,1,  37, 1, 30, 1, 20));
-//        }
-//        for (int i = 0; i < 9; i++) {
-//            boxes.add(new Box(44,1,  37, 1, 27, 1, 20));
-//        }
-//        for (int i = 0; i < 17; i++) {
-//            boxes.add(new Box(79,1,  76, 1, 54, 1, 20));
-//        }
-//        for (int i = 0; i < 17; i++) {
-//            boxes.add(new Box(116,0,  78, 0, 20, 1, 20));
-//        }
 //        for (int i = 0; i < 325; i++) {
 //            boxes.add(new Box(36, 40, 28, 20));
 //        }
@@ -86,21 +64,29 @@ public class Main {
     }
 
     private static List<Chromosome> initializePopulation(ArrayList<Tower> towers) {
+        int size = 5000;
         List<Chromosome> population = new ArrayList<>();
-        for (int i = 0; i < POPULATION_SIZE; i++) {
+        for (int i = 0; i < size; i++) {
             Chromosome chromosome = new Chromosome();
+            chromosome.setFillingHeuristic(new RecursiveFillingHeuristic());
             chromosome.generateRandomGenes(towers.size());
             population.add(chromosome);
         }
-        return population;
+        System.out.println("a");
+        population.sort((a, b) -> (int) (b.fitness() - a.fitness()));
+        System.out.println("b");
+        ArrayList<Chromosome> result = new ArrayList<>(population.subList(0, POPULATION_SIZE));
+
+        return result;
     }
 
     public static void main(String[] args) throws IOException {
         ArrayList<Double> results = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader("testData/thpack7.txt"))) {
-            for (int i = 0; i < 100; i++) {
+        try (BufferedReader br = new BufferedReader(new FileReader("testData/soco.txt"))) {
+            for (int i = 0; i < 1; i++) {
                 br.readLine();
-                br.readLine();
+                String[] containerParam = br.readLine().strip().split(" ");
+                container = new Container(Integer.parseInt(containerParam[0]), Integer.parseInt(containerParam[2]), Integer.parseInt(containerParam[1]));
                 int numOfBoxTypes = Integer.parseInt(br.readLine().strip());
                 for (int j = 0; j < numOfBoxTypes; j++) {
                     String box = br.readLine().strip();
@@ -126,29 +112,40 @@ public class Main {
         long startTime = System.nanoTime();
         List<BoxGroup> boxGroups = BoxUtil.groupBoxesByTypes(boxes);
         GenerateTowers generateTowers = new GenerateTowers(boxGroups);
-        double result = 0;
         while (!boxGroups.isEmpty()) {
             Tower tower = generateTowers.fillTower(new Tower(container.getWidth(), container.getHeight(), container.getLength()), true);
             towers.add(tower);
         }
         List<Chromosome> population = initializePopulation(towers);
+        Chromosome result = getFittest(population);
 
-        for (int i = 0; i < 500; i++) {
-            population = crowdingStep(population, 4, 0.3, 0.9);
-            //System.out.println("Volume ut: " + population.get(0).fitness() / (container.getHeight() * container.getLength() * container.getWidth()));
-            //System.out.println("Weight: " + population.get(0).weightFitness());
-            if (result < population.get(0).fitness() / (container.getHeight() * container.getLength() * container.getWidth())) {
-                result = population.get(0).fitness() / (container.getHeight() * container.getLength() * container.getWidth());
+        for (int i = 0; i < 1500; i++) {
+            population = crowdingStep(population, 4, 0.4, 0.9);
+            if (getFittest(population).fitness() > result.fitness()) {
+                result = getFittest(population);
             }
+            System.out.println("Volume ut: " + population.get(0).fitness() / (container.getHeight() * container.getLength() * container.getWidth()));
+            System.out.println(i);
         }
         long endTime = System.nanoTime();
         double duration = (double) (endTime - startTime) / 1000000000;
         System.out.println("Seconds: " + duration);
-        System.out.println("Volume: " + population.get(0).fitness());
-        System.out.println("Weight: " + population.get(0).weightFitness());
-        System.out.println("Volume ut: " + result);
-        //writeCoordinates(population);
-        towers.clear();
+        System.out.println("Volume: " + result.fitness());
+        System.out.println("Weight: " + result.weightFitness());
+        System.out.println("Volume ut: " + result.fitness() / (container.getHeight() * container.getLength() * container.getWidth()));
+        writeCoordinates(result);
+        return result.fitness() / (container.getHeight() * container.getLength() * container.getWidth());
+    }
+
+    public static Chromosome getFittest(List<Chromosome> chromosomes){
+        double maxFix = 0;
+        Chromosome result = null;
+        for (Chromosome chromosome: chromosomes) {
+            if (chromosome.fitness() > maxFix){
+                result = chromosome;
+                maxFix = chromosome.fitness();
+            }
+        }
         return result;
     }
 }
