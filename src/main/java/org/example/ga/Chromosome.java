@@ -21,7 +21,7 @@ public class Chromosome {
     public int rank;
     List<Gene> genes;
 
-    FillingHeuristic fillingHeuristic = new DummyFillingHeuristic();
+    FillingHeuristic fillingHeuristic = new RecursiveFillingHeuristic();
 
     public Chromosome() {
         genes = new ArrayList<>();
@@ -52,6 +52,16 @@ public class Chromosome {
         for (TowerPlacement towerPlacement : towerPlacements) {
             Tower tower = towers.get(towerPlacement.getTowerNumber());
             chromoTotalVolume += tower.getTotalVolume(tower);
+        }
+        return chromoTotalVolume;
+    }
+
+    public double getFlorFitness() {
+        List<TowerPlacement> towerPlacements = fillingHeuristic.generateSolution(this, towers, container);
+        double chromoTotalVolume = 0.0;
+        for (TowerPlacement towerPlacement : towerPlacements) {
+            Tower tower = towers.get(towerPlacement.getTowerNumber());
+            chromoTotalVolume += tower.getBoxes().get(0).getDepth() * tower.getBoxes().get(0).getLength();
         }
         return chromoTotalVolume;
     }
