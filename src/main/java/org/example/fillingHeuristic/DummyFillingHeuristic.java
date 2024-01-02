@@ -7,6 +7,7 @@ import org.example.towerHeuristic.Tower;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.example.Main.towers;
@@ -22,7 +23,7 @@ public class DummyFillingHeuristic implements FillingHeuristic {
         while (!genesLeft.isEmpty() && haveAmountChanged) {
             ArrayList<ArrayList<TowerPlacement>> rpt = new ArrayList<>();
             int before = genesLeft.size();
-            genesLeft = fill(x, y, 0, container, chromosome.getGenes(), rpt);
+            genesLeft = fill(x, y, 0, container, genesLeft, rpt);
             int after = genesLeft.size();
             haveAmountChanged = before != after;
             result.addAll(packUp(rpt).stream().flatMap(List::stream)
@@ -55,7 +56,7 @@ public class DummyFillingHeuristic implements FillingHeuristic {
                     continue;
                 }
                 TowerPlacement towerPlacement = new TowerPlacement(gene.getTowersIndex(), gene.getRotation(), xcord, ycord);
-                geneCopy.remove(gene);
+                geneCopy.remove(getIndexToRemove(geneCopy, gene));
                 ycord += towerBase.getLength();
                 totalWeight += towerBase.getWeight();
                 rowPlacements.add(towerPlacement);
@@ -73,6 +74,15 @@ public class DummyFillingHeuristic implements FillingHeuristic {
             }
         }
         return geneCopy;
+    }
+
+    public static int getIndexToRemove(List<Gene> genes, Gene gene){
+        for  (int i = 0; i < genes.size(); i++) {
+            if (Objects.equals(genes.get(i).getTowersIndex(), gene.getTowersIndex())) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     //depth - x

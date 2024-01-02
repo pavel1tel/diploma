@@ -89,6 +89,12 @@ public class Tower {
         }
         return totalWeight;
     }
+
+    public double getTotalWaste(){
+        double max = (this.getBoxes().get(0).getDepth() * this.getBoxes().get(0).getLength() * container.getHeight());
+        double real = getTotalVolume(this);
+        return (max - real) * -1;
+    }
     public double getDepth() {
         return depth;
     }

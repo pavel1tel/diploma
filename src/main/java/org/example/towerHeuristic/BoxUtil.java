@@ -15,17 +15,6 @@ public class BoxUtil {
         rotations.add("xz");
     }
 
-    public static AbstractMap.SimpleEntry<String, Integer> getBoxGroupLongestDimension(BoxGroup boxGroup) {
-        if (boxGroup.getHeight() > boxGroup.getDepth() && boxGroup.getHeight() > boxGroup.getLength()) {
-            return new AbstractMap.SimpleEntry<>("height", boxGroup.getHeight());
-        }
-        if (boxGroup.getDepth() > boxGroup.getLength() && boxGroup.getDepth() > boxGroup.getHeight()) {
-            return new AbstractMap.SimpleEntry<>("depth", boxGroup.getDepth());
-        } else {
-            return new AbstractMap.SimpleEntry<>("length", boxGroup.getLength());
-        }
-    }
-
     public static void rotateBoxSoLargestDimensionGoDeep(BoxGroup boxGroup, Tower tower) {
         ArrayList<String> allowedRotations = getAllowedRotations(boxGroup);
         ArrayList<AbstractMap.SimpleEntry<String, Integer>> dimensions = new ArrayList<>();
@@ -41,11 +30,15 @@ public class BoxUtil {
             if (dimension.getKey().equals("height")) {
                 if (allowedRotations.contains("x")) {
                     BoxUtil.rotateBox(boxGroup, "x");
+                } else if (allowedRotations.contains("xy")){
+                    BoxUtil.rotateBox(boxGroup, "xy");
                 }
             }
             if (dimension.getKey().equals("length")) {
                 if (allowedRotations.add("z")) {
                     BoxUtil.rotateBox(boxGroup, "z");
+                } else if (allowedRotations.contains("xz")){
+                    BoxUtil.rotateBox(boxGroup, "xz");
                 }
             }
             return;
@@ -116,10 +109,10 @@ public class BoxUtil {
             rotations.add("xy");
         } else if (boxGroup.getRotations() == 6) {
             rotations.add("xx");
-            rotations.add("z");
+            rotations.add("x");
             rotations.add("y");
-            rotations.add("xy");
             rotations.add("z");
+            rotations.add("xy");
             rotations.add("xz");
         }
         return rotations;

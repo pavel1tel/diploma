@@ -10,6 +10,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+import java.util.Random;
 
 import static org.example.Main.*;
 import static org.example.fillingHeuristic.DummyFillingHeuristic.getTowerBase;
@@ -21,8 +22,10 @@ public class GenerateCoordinates {
         FillingHeuristic fillingHeuristic = chromosome.fillingHeuristic;
         List<TowerPlacement> towerPlacements = fillingHeuristic.generateSolution(chromosome, towers, container);
         for (TowerPlacement towerPlacement : towerPlacements) {
+            System.out.println(towerPlacement.getTowerNumber());
             Tower tower = towers.get(towerPlacement.getTowerNumber());
             TowerBase towerbase = getTowerBase(towerPlacement.getRotation(), tower);
+            boolean wasRotated = tower.getDepth() != towerbase.getDepth();
             int z = 0;
             int x = 0;
             int y = 0;
@@ -35,39 +38,52 @@ public class GenerateCoordinates {
                 writeToFIle("result.txt", length + " " + height + " " + depth + " " + x + " " + y + " " + z);
                 z += height;
             }
-            if (tower.getTowerOnTop() != null){
-                writeBoxesFromTower(tower.getTowerOnTop(), x, y, z);
+            if (tower.getTowerOnTop() != null) {
+                writeBoxesFromTower(tower.getTowerOnTop(), x, y, z, wasRotated);
 
             }
         }
     }
 
-    public static void writeBoxesFromTower(Tower tower, int x, int y, int z){
-        if(tower == null){
+    public static void writeBoxesFromTower(Tower tower, int x, int y, int z, boolean wasRotated) {
+        if (tower == null) {
             return;
         }
         int zz = z;
-        for (Box box : tower.getBoxes()){
-            int length =  box.getLength();
-            int height =  box.getHeight();
+        for (Box box : tower.getBoxes()) {
+            int length = box.getLength();
+            int height = box.getHeight();
             int depth =  box.getDepth();
-            writeToFIle("result.txt" ,length + " " + height + " " + depth + " " + x + " " + y + " " + zz);
+            if (wasRotated){
+                length = box.getDepth();
+                depth =  box.getLength();
+            }
+            writeToFIle("result.txt", length + " " + height + " " + depth + " " + x + " " + y + " " + zz);
             zz += height;
         }
-        if (tower.getOnFront() != null){
-            writeBoxesFromTower(tower.getOnFront(), x +  tower.getBoxes().get(0).getDepth(), y, z);
+        if (!wasRotated) {
+            if (tower.getOnFront() != null) {
+                writeBoxesFromTower(tower.getOnFront(), x + tower.getBoxes().get(0).getDepth(), y, z, wasRotated);
+            }
+            if (tower.getOnSide() != null) {
+                writeBoxesFromTower(tower.getOnSide(), x, y + tower.getBoxes().get(0).getLength(), z, wasRotated);
+            }
+        } else {
+            if (tower.getOnFront() != null) {
+                writeBoxesFromTower(tower.getOnFront(), x , y + tower.getBoxes().get(0).getDepth(), z, wasRotated);
+            }
+            if (tower.getOnSide() != null) {
+                writeBoxesFromTower(tower.getOnSide(), x + tower.getBoxes().get(0).getLength(), y , z, wasRotated);
+            }
         }
-        if (tower.getOnSide() != null){
-            writeBoxesFromTower(tower.getOnSide(), x, y +  tower.getBoxes().get(0).getLength(), z);
-        }
-        if (tower.getTowerOnTop() != null){
-            writeBoxesFromTower(tower.getTowerOnTop(), x, y, zz);
+        if (tower.getTowerOnTop() != null) {
+            writeBoxesFromTower(tower.getTowerOnTop(), x, y, zz, wasRotated);
         }
     }
 
     public static void writeToFIle(String filename, String str) {
         try {
-            FileWriter fw = new FileWriter(filename,true);
+            FileWriter fw = new FileWriter(filename, true);
             BufferedWriter writer = new BufferedWriter(fw);
             writer.write(str);
             writer.newLine();
@@ -79,7 +95,7 @@ public class GenerateCoordinates {
 
     public static void clear(String filename) {
         try {
-            FileWriter fw = new FileWriter(filename,false);
+            FileWriter fw = new FileWriter(filename, false);
             BufferedWriter writer = new BufferedWriter(fw);
             writer.write("");
             writer.close();

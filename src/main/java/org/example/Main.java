@@ -64,17 +64,14 @@ public class Main {
     }
 
     private static List<Chromosome> initializePopulation(ArrayList<Tower> towers) {
-        int size = 5000;
+        int size = 2000;
         List<Chromosome> population = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             Chromosome chromosome = new Chromosome();
-            chromosome.setFillingHeuristic(new RecursiveFillingHeuristic());
             chromosome.generateRandomGenes(towers.size());
             population.add(chromosome);
         }
-        System.out.println("a");
         population.sort((a, b) -> (int) (b.fitness() - a.fitness()));
-        System.out.println("b");
         ArrayList<Chromosome> result = new ArrayList<>(population.subList(0, POPULATION_SIZE));
 
         return result;
@@ -82,8 +79,8 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         ArrayList<Double> results = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader("testData/soco.txt"))) {
-            for (int i = 0; i < 1; i++) {
+        try (BufferedReader br = new BufferedReader(new FileReader("thpack1/br10.txt"))) {
+            for (int i = 0; i < 10; i++) {
                 br.readLine();
                 String[] containerParam = br.readLine().strip().split(" ");
                 container = new Container(Integer.parseInt(containerParam[0]), Integer.parseInt(containerParam[2]), Integer.parseInt(containerParam[1]));
@@ -99,7 +96,6 @@ public class Main {
                 results.add(crowding());
                 towers.clear();
                 boxes.clear();
-                System.out.println(i);
             }
         }
         System.out.println();
@@ -110,17 +106,12 @@ public class Main {
 
     public static double crowding() {
         long startTime = System.nanoTime();
-        List<BoxGroup> boxGroups = BoxUtil.groupBoxesByTypes(boxes);
-        GenerateTowers generateTowers = new GenerateTowers(boxGroups);
-        while (!boxGroups.isEmpty()) {
-            Tower tower = generateTowers.fillTower(new Tower(container.getWidth(), container.getHeight(), container.getLength()), true);
-            towers.add(tower);
-        }
+        towers = TowerGa.GAloop();
         List<Chromosome> population = initializePopulation(towers);
         Chromosome result = getFittest(population);
 
-        for (int i = 0; i < 1500; i++) {
-            population = crowdingStep(population, 4, 0.4, 0.9);
+        for (int i = 0; i < 3000; i++) {
+            population = crowdingStep(population, 4, 0.3, 0.9);
             if (getFittest(population).fitness() > result.fitness()) {
                 result = getFittest(population);
             }

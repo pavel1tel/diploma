@@ -1,10 +1,25 @@
 package org.example.towerHeuristic;
 
+import org.example.fillingHeuristic.RecursiveFillingHeuristic;
+import org.example.ga.Chromosome;
+
 import java.util.*;
+
+import static org.example.Main.boxes;
+import static org.example.Main.container;
 
 public class GenerateTowers {
 
     List<BoxGroup> boxGroups;
+
+    public ArrayList<Tower> generateTowers() {
+        ArrayList<Tower> currentTow = new ArrayList<>();
+        while (!boxGroups.isEmpty()) {
+            Tower tower = fillTower(new Tower(container.getWidth(), container.getHeight(), container.getLength()), true);
+            currentTow.add(tower);
+        }
+        return currentTow;
+    }
 
     public GenerateTowers(List<BoxGroup> boxGroups) {
         this.boxGroups = boxGroups;
@@ -12,13 +27,11 @@ public class GenerateTowers {
 
     public BoxGroup pickNewBoxGroup(Tower tower) {
         List<BoxGroup> copyOfBoxGroups = new ArrayList<>(boxGroups);
-        while (!copyOfBoxGroups.isEmpty()) {
-            BoxGroup boxGroup = selectOpenBoxWithBiggestQuantity(copyOfBoxGroups);
-            if (boxGroup == null) {
-                boxGroup = firstRankingCriteria(copyOfBoxGroups);
-            }
+        int i = 0;
+        while (i < boxGroups.size()) {
+            BoxGroup boxGroup = copyOfBoxGroups.get(i);
             if (BoxUtil.getBoxRotationThatFitsTower(boxGroup, tower).isEmpty()) {
-                copyOfBoxGroups.remove(boxGroup);
+                i++;
                 continue;
             }
             return boxGroup;
@@ -150,6 +163,6 @@ public class GenerateTowers {
                 }
             }
         }
-        return null;
+        return result;
     }
 }

@@ -16,12 +16,9 @@ import java.util.stream.IntStream;
 import static org.example.Main.*;
 
 public class Chromosome {
-    public int dominationCount = 0;
-    public ArrayList<Integer> dominatedSolutions = new ArrayList<>();
-    public int rank;
     List<Gene> genes;
 
-    FillingHeuristic fillingHeuristic = new RecursiveFillingHeuristic();
+    FillingHeuristic fillingHeuristic = new DummyFillingHeuristic();
 
     public Chromosome() {
         genes = new ArrayList<>();
