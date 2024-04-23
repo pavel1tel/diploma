@@ -11,7 +11,12 @@ public class TowerInversionMutation {
         Random rnd = new Random();
         List<TowerGene> genes = new ArrayList<>();
         int maxWindowSize = chromosome.getGenes().size() / 2;
-        int windowSize = rnd.nextInt(1, maxWindowSize);
+        int windowSize;
+        if (maxWindowSize <= 1){
+            windowSize = 1;
+        } else {
+            windowSize = rnd.nextInt(1, maxWindowSize);
+        }
         int start = new Random().nextInt(0, chromosome.getGenes().size() - windowSize);
         int end = start + windowSize;
         genes.addAll(chromosome.getGenes().subList(0, start));

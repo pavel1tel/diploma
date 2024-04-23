@@ -1,5 +1,7 @@
 package org.example.fillingHeuristic;
 
+import java.util.Objects;
+
 public class TowerPlacement {
     Integer towerNumber;
     Integer rotation;
@@ -43,5 +45,18 @@ public class TowerPlacement {
 
     public void setYcord(double ycord) {
         this.ycord = ycord;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TowerPlacement that = (TowerPlacement) o;
+        return Objects.equals(towerNumber, that.towerNumber);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(towerNumber);
     }
 }

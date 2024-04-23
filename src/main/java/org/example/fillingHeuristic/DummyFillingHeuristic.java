@@ -8,7 +8,6 @@ import org.example.towerHeuristic.Tower;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static org.example.Main.towers;
 
@@ -31,6 +30,27 @@ public class DummyFillingHeuristic implements FillingHeuristic {
             x = getNewX(result);
         }
         return result;
+    }
+
+    public static List<List<TowerPlacement>> generateRows(Chromosome chromosome, List<Tower> towers, Container container) {
+        List<Gene> genesLeft = chromosome.getGenes();
+        List<TowerPlacement> result = new ArrayList<>();
+        List<List<TowerPlacement>> rows = new ArrayList<>();
+        boolean haveAmountChanged = true;
+        int x = 0;
+        int y = 0;
+        while (!genesLeft.isEmpty() && haveAmountChanged) {
+            ArrayList<ArrayList<TowerPlacement>> rpt = new ArrayList<>();
+            int before = genesLeft.size();
+            genesLeft = fill(x, y, 0, container, genesLeft, rpt);
+            int after = genesLeft.size();
+            haveAmountChanged = before != after;
+            result.addAll(packUp(rpt).stream().flatMap(List::stream)
+                    .toList());
+            x = getNewX(result);
+            rows.addAll(rpt);
+        }
+        return rows;
     }
 
     public static List<Gene> fill(double xcord, double ycord, double totalWeight, Container container, List<Gene> genes, ArrayList<ArrayList<TowerPlacement>> rpt) {

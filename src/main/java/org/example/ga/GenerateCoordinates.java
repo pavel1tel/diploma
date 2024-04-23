@@ -4,6 +4,8 @@ import org.example.fillingHeuristic.FillingHeuristic;
 import org.example.fillingHeuristic.TowerBase;
 import org.example.fillingHeuristic.TowerPlacement;
 import org.example.towerHeuristic.Box;
+import org.example.towerHeuristic.BoxGroup;
+import org.example.towerHeuristic.BoxUtil;
 import org.example.towerHeuristic.Tower;
 
 import java.io.BufferedWriter;
@@ -17,7 +19,10 @@ import static org.example.fillingHeuristic.DummyFillingHeuristic.getTowerBase;
 
 public class GenerateCoordinates {
 
+    static List<BoxGroup> boxGroups = BoxUtil.groupBoxesByTypes(boxes);
+
     public static void writeCoordinates(Chromosome chromosome) {
+        boxGroups = BoxUtil.groupBoxesByTypes(boxes);
         clear("result.txt");
         FillingHeuristic fillingHeuristic = chromosome.fillingHeuristic;
         List<TowerPlacement> towerPlacements = fillingHeuristic.generateSolution(chromosome, towers, container);
@@ -30,12 +35,14 @@ public class GenerateCoordinates {
             int x = 0;
             int y = 0;
             for (Box box : tower.getBoxes()) {
+                BoxGroup boxGroup = new BoxGroup(tower.getBoxes().get(0).getDepth(), tower.getBoxes().get(0).getLength(), tower.getBoxes().get(0).getHeight(), 0, 6);
+                int group = boxGroups.indexOf(boxGroup) + 1;
                 int length = (int) towerbase.getLength();
                 int height = tower.getBoxes().get(0).getHeight();
                 int depth = (int) towerbase.getDepth();
                 x = (int) towerPlacement.getXcord();
                 y = (int) towerPlacement.getYcord();
-                writeToFIle("result.txt", length + " " + height + " " + depth + " " + x + " " + y + " " + z);
+                writeToFIle("result.txt", length + " " + height + " " + depth + " " + x + " " + y + " " + z + " " + group);
                 z += height;
             }
             if (tower.getTowerOnTop() != null) {
@@ -51,6 +58,8 @@ public class GenerateCoordinates {
         }
         int zz = z;
         for (Box box : tower.getBoxes()) {
+            BoxGroup boxGroup = new BoxGroup(box.getDepth(), box.getLength(), box.getHeight(), 0, 6);
+            int group = boxGroups.indexOf(boxGroup) + 1;
             int length = box.getLength();
             int height = box.getHeight();
             int depth =  box.getDepth();
@@ -58,7 +67,7 @@ public class GenerateCoordinates {
                 length = box.getDepth();
                 depth =  box.getLength();
             }
-            writeToFIle("result.txt", length + " " + height + " " + depth + " " + x + " " + y + " " + zz);
+            writeToFIle("result.txt", length + " " + height + " " + depth + " " + x + " " + y + " " + zz + " " + group);
             zz += height;
         }
         if (!wasRotated) {

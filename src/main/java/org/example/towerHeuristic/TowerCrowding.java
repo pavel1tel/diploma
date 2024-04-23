@@ -6,6 +6,7 @@ import org.example.ga.Chromosome;
 
 import java.util.*;
 
+import static org.example.Main.*;
 import static org.example.ga.ArrayPermutations.generatePermutations;
 import static org.example.ga.ArrayPermutations.generatePermutations2;
 
@@ -79,12 +80,26 @@ public class TowerCrowding {
             }
         }
 
+        return removeDuplicates(result);
+    }
+
+    public static List<TowerChromosome> removeDuplicates(List<TowerChromosome> chromosomes){
+        Set<TowerChromosome> set = new HashSet<>(chromosomes);
+        ArrayList<TowerChromosome> result = new ArrayList<>(set);
+        while (result.size() != POPULATION_SIZE){
+            List<BoxGroup> boxGroup = BoxUtil.groupBoxesByTypes(boxes);
+            result.add(new TowerChromosome().generateRandomGenes(boxGroup.size()));
+        }
         return result;
     }
 
     public static int distanceFunction(TowerChromosome c1, TowerChromosome c2) {
         int result = 0;
         for (int i = 0; i < c1.getGenes().size(); i++) {
+            if (c1.getGenes().size() != c2.getGenes().size()){
+                System.out.println(c1.getGenes().size());
+                System.out.println(c2.getGenes().size());
+            }
             if (!(Objects.equals(c1.getGenes().get(i).getBoxGroupIndex(), c2.getGenes().get(i).getBoxGroupIndex()))) {
                 result += 1;
             }

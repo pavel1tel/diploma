@@ -1,8 +1,8 @@
 package org.example.fillingHeuristic;
 
 public class TowerBase {
-    double length;
-    double depth;
+    double length = 0;
+    double depth = 0;
 
     double weight;
 

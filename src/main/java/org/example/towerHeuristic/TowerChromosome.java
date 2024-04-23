@@ -1,16 +1,8 @@
 package org.example.towerHeuristic;
 
-import org.example.fillingHeuristic.DummyFillingHeuristic;
-import org.example.fillingHeuristic.FillingHeuristic;
-import org.example.fillingHeuristic.RecursiveFillingHeuristic;
-import org.example.fillingHeuristic.TowerPlacement;
 import org.example.ga.TowerGene;
-import org.example.towerHeuristic.Tower;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -28,7 +20,7 @@ public class TowerChromosome {
         this.genes = genes;
     }
 
-    public void generateRandomGenes(int numberOfBoxGroups) {
+    public TowerChromosome generateRandomGenes(int numberOfBoxGroups) {
         Random random = new Random();
         List<Integer> integerList = IntStream.range(0, numberOfBoxGroups)
                 .boxed()
@@ -39,6 +31,7 @@ public class TowerChromosome {
             TowerGene gene = new TowerGene(i);
             genes.add(gene);
         }
+        return this;
     }
 
     public double fitness() {
@@ -67,5 +60,18 @@ public class TowerChromosome {
 
     public void setGenes(List<TowerGene> genes) {
         this.genes = genes;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TowerChromosome that = (TowerChromosome) o;
+        return Objects.equals(genes, that.genes);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(genes);
     }
 }

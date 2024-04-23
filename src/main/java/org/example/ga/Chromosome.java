@@ -6,10 +6,7 @@ import org.example.fillingHeuristic.RecursiveFillingHeuristic;
 import org.example.fillingHeuristic.TowerPlacement;
 import org.example.towerHeuristic.Tower;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -28,7 +25,7 @@ public class Chromosome {
         this.genes = genes;
     }
 
-    public void generateRandomGenes(int numberOfTowers) {
+    public Chromosome generateRandomGenes(int numberOfTowers) {
         Random random = new Random();
         List<Integer> integerList = IntStream.range(0, numberOfTowers)
                 .boxed()
@@ -41,6 +38,7 @@ public class Chromosome {
             gene.setTowersIndex(i);
             genes.add(gene);
         }
+        return this;
     }
 
     public double fitness() {
@@ -80,5 +78,18 @@ public class Chromosome {
 
     public void setFillingHeuristic(FillingHeuristic fillingHeuristic) {
         this.fillingHeuristic = fillingHeuristic;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Chromosome that = (Chromosome) o;
+        return Objects.equals(genes, that.genes);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(genes);
     }
 }

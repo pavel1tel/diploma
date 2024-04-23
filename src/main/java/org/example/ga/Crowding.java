@@ -1,15 +1,21 @@
 package org.example.ga;
 
+import org.example.fillingHeuristic.HeuristicCrossover;
+import org.example.fillingHeuristic.HeuristicMutation;
 import org.example.fillingHeuristic.InversionMutation;
 import org.example.fillingHeuristic.OrderCrossover;
 
 import java.util.*;
 
+import static org.example.Main.POPULATION_SIZE;
+import static org.example.Main.towers;
 import static org.example.ga.ArrayPermutations.generatePermutations;
 
 public class Crowding {
 
     public static List<Chromosome> crowdingStep(List<Chromosome> oldPop, int S, double Pm, double Pc) {
+        Double max = oldPop.stream().mapToDouble(c -> (int) c.fitness()).max().getAsDouble();
+        Double min = oldPop.stream().mapToDouble(c -> (int) c.fitness()).min().getAsDouble();
         List<Chromosome> result = new ArrayList<>();
         List<Integer> indexPool = new ArrayList<>();
         List<Chromosome> parent = new ArrayList<>();
@@ -77,6 +83,15 @@ public class Crowding {
             }
         }
 
+        return removeDuplicates(result);
+    }
+
+    public static List<Chromosome> removeDuplicates(List<Chromosome> chromosomes){
+        Set<Chromosome> set = new HashSet<>(chromosomes);
+        ArrayList<Chromosome> result = new ArrayList<>(set);
+        while (result.size() != POPULATION_SIZE){
+            result.add(new Chromosome().generateRandomGenes(towers.size()));
+        }
         return result;
     }
 
@@ -114,6 +129,10 @@ public class Crowding {
         }
 
         return result;
+    }
+
+    public static double getMutationProbability(double min, double max, Chromosome chromosome){
+        return 1 - ((chromosome.fitness() - min)/(max - min));
     }
 
     private static int evaluateDistance(List<Chromosome> chromosomes) {

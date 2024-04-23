@@ -141,15 +141,12 @@ public class BoxUtil {
     public static boolean areBoxesEqual(BoxGroup boxGroup1, BoxGroup boxGroup2){
         for (String rotation : rotations) {
             BoxGroup copy = new BoxGroup(boxGroup2);
-            rotateBox(boxGroup2, rotation);
-            if (boxGroup1.getHeight() == boxGroup2.getHeight() &&
-                boxGroup1.getDepth() == boxGroup2.getDepth() &&
-                boxGroup1.getLength() == boxGroup2.getLength()) {
+            rotateBox(copy, rotation);
+            if (boxGroup1.getHeight() == copy.getHeight() &&
+                boxGroup1.getDepth() == copy.getDepth() &&
+                boxGroup1.getLength() == copy.getLength()) {
                return true;
             }
-            boxGroup2.setDepth(copy.getDepth());
-            boxGroup2.setHeight(copy.getHeight());
-            boxGroup2.setLength(copy.getLength());
         }
         return false;
     }
@@ -159,15 +156,12 @@ public class BoxUtil {
         for(BoxGroup boxGroup2 : boxGroups) {
             for (String rotation : rotations) {
                 BoxGroup copy = new BoxGroup(boxGroup2);
-                rotateBox(boxGroup2, rotation);
-                if (boxGroup1.getHeight() == boxGroup2.getHeight() &&
-                        boxGroup1.getDepth() == boxGroup2.getDepth() &&
-                        boxGroup1.getLength() == boxGroup2.getLength()) {
+                rotateBox(copy, rotation);
+                if (boxGroup1.getHeight() == copy.getHeight() &&
+                        boxGroup1.getDepth() == copy.getDepth() &&
+                        boxGroup1.getLength() == copy.getLength()) {
                     return boxGroup2;
                 }
-                boxGroup2.setDepth(copy.getDepth());
-                boxGroup2.setHeight(copy.getHeight());
-                boxGroup2.setLength(copy.getLength());
             }
         }
         return null;

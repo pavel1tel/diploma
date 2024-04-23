@@ -12,7 +12,12 @@ public class TowerOrderCrossover {
     public ArrayList<TowerChromosome> crossover(TowerChromosome p1, TowerChromosome p2) {
         Random rnd = new Random();
         int maxWindowSize = p1.getGenes().size() / 2;
-        int windowSize = rnd.nextInt(1, maxWindowSize);
+        int windowSize;
+        if (maxWindowSize <= 1){
+            windowSize = 1;
+        } else {
+            windowSize = rnd.nextInt(1, maxWindowSize);
+        }
         int start = new Random().nextInt(0, p1.getGenes().size() - windowSize);
         int end = start + windowSize;
         List<TowerGene> child1 = new ArrayList<>(p1.getGenes().subList(start, end));

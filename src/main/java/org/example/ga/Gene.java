@@ -35,4 +35,12 @@ public class Gene {
     public int hashCode() {
         return Objects.hash(towersIndex);
     }
+
+    public Gene(Integer towersIndex, Integer rotation) {
+        this.towersIndex = towersIndex;
+        this.rotation = rotation;
+    }
+
+    public Gene() {
+    }
 }
