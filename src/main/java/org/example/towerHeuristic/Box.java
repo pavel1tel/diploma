@@ -15,9 +15,9 @@ public class Box {
 
     public Box(int length, int orL, int width, int orD, int height, int orH, double weight) {
         this.depth = width;
-        this.orD = orD;
-        this.orL = orL;
-        this.orH = orH;
+        this.orD = 1;
+        this.orL = 1;
+        this.orH = 1;
         this.height = height;
         this.length = length;
         this.weight = 1;

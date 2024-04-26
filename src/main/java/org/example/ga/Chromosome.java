@@ -15,7 +15,7 @@ import static org.example.Main.*;
 public class Chromosome {
     List<Gene> genes;
 
-    FillingHeuristic fillingHeuristic = new DummyFillingHeuristic();
+    FillingHeuristic fillingHeuristic = new RecursiveFillingHeuristic();
 
     public Chromosome() {
         genes = new ArrayList<>();
