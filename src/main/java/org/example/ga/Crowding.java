@@ -1,9 +1,6 @@
 package org.example.ga;
 
-import org.example.fillingHeuristic.HeuristicCrossover;
-import org.example.fillingHeuristic.HeuristicMutation;
-import org.example.fillingHeuristic.InversionMutation;
-import org.example.fillingHeuristic.OrderCrossover;
+import org.example.fillingHeuristic.*;
 
 import java.util.*;
 
@@ -20,7 +17,7 @@ public class Crowding {
         List<Integer> indexPool = new ArrayList<>();
         List<Chromosome> parent = new ArrayList<>();
         List<Chromosome> child = new ArrayList<>();
-        OrderCrossover orderCrossover = new OrderCrossover();
+        Crossover orderCrossover = new OX5();
         InversionMutation inversionMutation = new InversionMutation();
         int[][] distance = new int[S][S];
         Random random = new Random();

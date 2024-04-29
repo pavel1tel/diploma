@@ -40,7 +40,12 @@ public class TowerChromosome {
         for (Tower tower : towerList) {
             totalWaste += tower.getTotalWaste();
         }
-        return totalWaste;
+        List<Tower> top30 = getTop30PercentOfTowersByVolumeWaste();
+        double area = 0;
+        for (Tower tower: top30) {
+            area += (tower.getBoxes().get(0).getDepth() * tower.getBoxes().get(0).getLength());
+        }
+        return totalWaste + area * 2;
     }
 
     public ArrayList<Tower> generateTowers(){
@@ -52,6 +57,12 @@ public class TowerChromosome {
         GenerateTowers generateTowers = new GenerateTowers(inOrder);
         ArrayList<Tower> towerList = generateTowers.generateTowers();
         return towerList;
+    }
+
+    public List<Tower> getTop30PercentOfTowersByVolumeWaste(){
+        List<Tower> towerList = generateTowers();
+        towerList.sort((o1, o2) -> (int) ((o1.getTotalWaste() * -1) - (o2.getTotalWaste() * -1)));
+        return  towerList.subList(0, towerList.size() / 3);
     }
 
     public List<TowerGene> getGenes() {

@@ -31,7 +31,7 @@ public class TowerGa {
                     best = towerChromosome;
                 }
             }
-//            System.out.println(best.fitness());
+            System.out.println(best.fitness());
         }
 
         return best.generateTowers();

@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class OrderCrossover {
+public class OrderCrossover implements Crossover{
 
     public ArrayList<Chromosome> crossover(Chromosome p1, Chromosome p2) {
         Random rnd = new Random();

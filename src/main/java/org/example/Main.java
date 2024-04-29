@@ -1,23 +1,20 @@
 package org.example;
 
-import org.example.fillingHeuristic.DummyFillingHeuristic;
-import org.example.fillingHeuristic.RecursiveFillingHeuristic;
 import org.example.ga.Chromosome;
 import org.example.ga.GenerateCoordinates;
 import org.example.towerHeuristic.*;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static org.example.Util.calculateMean;
@@ -26,7 +23,7 @@ import static org.example.ga.Crowding.crowdingStep;
 import static org.example.ga.GenerateCoordinates.writeCoordinates;
 
 public class Main {
-    public static final int POPULATION_SIZE = 100;
+    public static final int POPULATION_SIZE = 60;
     public static final int THREAD_SIZE = 12;
     public static List<Box> boxes = new ArrayList<>();
     public static Container container = new Container(587, 220, 233);
@@ -49,7 +46,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         ArrayList<Double> results = new ArrayList<>();
-        for (int w = 0; w < 1; w++) {
+        for (int w = 0; w < 10; w++) {
             try (BufferedReader br = new BufferedReader(new FileReader("testData/soco.txt"))) {
                 for (int i = 0; i < 1; i++) {
                     br.readLine();
@@ -70,6 +67,10 @@ public class Main {
                     List<Thread> threads = new ArrayList<>();
                     List<List<Chromosome>> populations = new ArrayList<>();
                     List<Double> intermidiate = new ArrayList<>();
+                    AtomicReference<Double> Pm = new AtomicReference<>(0.1);
+                    AtomicReference<Double> PmI = new AtomicReference<>(0.1);
+                    AtomicReference<Double> Pc = new AtomicReference<>(1.0);
+                    AtomicReference<Double> PcI = new AtomicReference<>(-0.1);
                     for (int j = 0; j < THREAD_SIZE; j++) {
                         populations.add(new ArrayList<>());
                     }
@@ -85,11 +86,25 @@ public class Main {
                                 } else {
                                     concPop = populations.get(0);
                                 }
-                                intermidiate.add(crowding(thisPop, cyclicBarrier, concPop, reentrantLock, isMain));
+                                intermidiate.add(crowding(thisPop, cyclicBarrier, concPop, reentrantLock, isMain, Pm.get(), Pc.get()));
                             } catch (InterruptedException | BrokenBarrierException e) {
                                 throw new RuntimeException(e);
                             }
                         });
+                        if (Pm.get() == 0.1){
+                            PmI.updateAndGet(v -> 0.1);
+                        }
+                        if (Pm.get() == 0.4){
+                            PmI.updateAndGet(v -> -0.1);
+                        }
+                        if (Pc.get() == 0.7 ){
+                            PcI.updateAndGet(v -> 0.1);
+                        }
+                        if (Pc.get() == 1.0 ){
+                            PcI.updateAndGet(v -> -0.1);
+                        }
+                        Pm.updateAndGet(v -> BigDecimal.valueOf(v).add(BigDecimal.valueOf(PmI.get())).doubleValue());
+                        Pc.updateAndGet(v -> BigDecimal.valueOf(v).add(BigDecimal.valueOf(PcI.get())).doubleValue());
                         threads.add(t);
                     }
                     for (Thread t : threads) {
@@ -102,7 +117,7 @@ public class Main {
                     populations.clear();
                     threads.clear();
                     intermidiate.clear();
-                    GenerateCoordinates.writeToFIle("soco", String.valueOf(results.get(results.size() - 1)));
+                    GenerateCoordinates.writeToFIle("thpack7par5", String.valueOf(results.get(results.size() - 1)));
                     towers.clear();
                     boxes.clear();
                 }
@@ -116,7 +131,7 @@ public class Main {
 
     }
 
-    public static double crowding(List<Chromosome> population, CyclicBarrier cyclicBarrier, List<Chromosome> concurrentPopulation, ReentrantLock reentrantLock, boolean isMain) throws InterruptedException, BrokenBarrierException {
+    public static double crowding(List<Chromosome> population, CyclicBarrier cyclicBarrier, List<Chromosome> concurrentPopulation, ReentrantLock reentrantLock, boolean isMain, double Pm, double Pc) throws InterruptedException, BrokenBarrierException {
         long startTime = System.nanoTime();
         population.addAll(initializePopulation(towers));
         cyclicBarrier.await();
@@ -126,8 +141,8 @@ public class Main {
         Thread.sleep(1000);
         Chromosome result = getFittest(population);
 
-        for (int i = 0; i < 2000; i++) {
-            List<Chromosome> r = crowdingStep(population, 4, 0.3, 0.9);
+        for (int i = 0; i < 3000; i++) {
+            List<Chromosome> r = crowdingStep(population, 4, Pm, Pc);
             population.clear();
             population.addAll(r);
             if (getFittest(population).fitness() > result.fitness()) {
@@ -141,16 +156,16 @@ public class Main {
                 cyclicBarrier.await();
                 reentrantLock.lock();
                 int startingSize = population.size();
-                for (int j = 0; j < startingSize; j++) {
-                    if (j % 3 == d) {
+                for (int j = POPULATION_SIZE / 10; j < startingSize; j++) {
+                    if (j % 5 == d) {
                         Chromosome current = population.get(j);
                         Chromosome concurrent = concurrentPopulation.get(j);
                         population.add(concurrent);
                         concurrentPopulation.add(current);
                     }
                 }
-                for (int j = 0; j < startingSize; j++) {
-                    if (j % 3 == d) {
+                for (int j = POPULATION_SIZE / 10; j < startingSize; j++) {
+                    if (j % 5 == d) {
                         population.remove(j);
                         concurrentPopulation.remove(j);
                     }
